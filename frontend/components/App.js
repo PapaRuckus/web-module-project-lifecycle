@@ -18,16 +18,22 @@ export default class App extends React.Component {
     this.setState({ ...this.state, todoNameInput: value });
   };
 
+  resetForm = () => {
+    this.setState({ ...this.state, todoNameInput: "" });
+  };
+
+  setAxiosResponseError = (err) => {
+    this.setState({ ...this.state, error: err.response.data.message });
+  };
+
   postNewTodo = () => {
     axios
       .post(URL, { name: this.state.todoNameInput })
       .then((res) => {
         this.fetchAllTodos();
-        this.setState({...this.state, todoNameInput: ""})
+        this.resetForm();
       })
-      .catch((err) => {
-        this.setState({ ...this.state, error: err.response.data.message });
-      });
+      .catch(this.setAxiosResponseError);
   };
 
   onTodoFormSubmit = (evt) => {
@@ -39,9 +45,7 @@ export default class App extends React.Component {
     axios
       .get(URL)
       .then((res) => this.setState({ ...this.state, todos: res.data.data }))
-      .catch((err) =>
-        this.setState({ ...this.state, error: err.response.data.message })
-      );
+      .catch(this.setAxiosResponseError);
   };
 
   componentDidMount() {
